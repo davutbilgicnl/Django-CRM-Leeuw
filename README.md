@@ -152,5 +152,5 @@ report a bug or request new feature. we are glad to help.
 
 For commercial support [Contact us](https://micropyramid.com/contact-us/)
 
-# Trigger deploy
-
+# Trigger deploy...
+✅ Deze regel is toegevoegd om te testen.
