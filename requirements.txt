@@ -19,6 +19,28 @@ aiofiles
 requests
 pytest
 httpx
+django
+celery
+django-cors-headers
+dotenv
+wagtail
+django-phonenumber-field
+djangorestframework-simplejwt
+django-ses
+drf-spectacular
+psycopg2-binary
+django-extensions
+arrow
+pytz
+djangorestframework
+drf-yasg
+whitenoise
+Pillow
+redis
+pdfkit
+phonenumbers
+django-crum
+drf-rw-serializers
 # pip install -r requirements.txt
 #openssl rand -hex 32 to create random ssl form Oauth2
 # py -m venv .venv //.venv the name of the virtual envirement and py the version of python mybe python3 or python or py
