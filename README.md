@@ -154,3 +154,241 @@ For commercial support [Contact us](https://micropyramid.com/contact-us/)
 
 # Trigger deploy
 
+# Update Readme door Back-end Team
+Back-end opstellen:
+### 1- install Docker desktop en zorg voor dat de versie van python is: 3.11.0 
+-----------------------------------------------------------------------------------
+### 2- install PostgreSQL
+-----------------------------------------------------------------------------------
+### 3- maak een nieuwe bestaand .env in de project route, met de inhoud:
+###### Django Ayarları
+SECRET_KEY=mco934$@)NHUYTC%6789
+ENV_TYPE=dev
+DOMAIN_NAME=localhost
+ 
+###### Veritabanı Ayarları (PostgreSQL örneği)
+DBNAME=bottlecrm
+DBUSER=postgres
+DBPASSWORD=root
+DBHOST=db
+DBPORT=5432
+ 
+###### Celery / Redis
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+ 
+###### Swagger
+SWAGGER_ROOT_URL=http://localhost:8000/
+ 
+###### Cache
+MEMCACHELOCATION=memcached:11211
+ 
+###### AWS (prod için boş)
+AWS_BUCKET_NAME=mybucket
+AWS_ACCESS_KEY_ID=your-access-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_SES_REGION_NAME=eu-west-1
+AWS_SES_REGION_ENDPOINT=email.eu-west-1.amazonaws.com
+ 
+###### Sentry
+SENTRY_DSN=
+ 
+###### Email
+DEFAULT_FROM_EMAIL=no-reply@localhost
+ADMIN_EMAIL=admin@localhost
+APP_NAME=DjangoCRM
+-------------------------------------------------------------------------------------
+ 
+### 4- update requirements.txt met deze inhoud: 
+aiofiles==24.1.0
+amqp==5.3.1
+annotated-types==0.7.0
+anyascii==0.3.3
+anyio==4.5.0
+arrow==1.3.0
+asgiref==3.9.1
+attrs==25.3.0
+bcrypt==4.3.0
+beautifulsoup4==4.13.4
+billiard==4.2.1
+boto3==1.39.4
+botocore==1.39.4
+celery==5.5.3
+certifi==2025.7.9
+cffi==1.17.1
+charset-normalizer==3.4.2
+click==8.2.1
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.3.0
+colorama==0.4.6
+cryptography==45.0.5
+defusedxml==0.7.1
+Django==5.2.4
+django-cors-headers==4.7.0
+django-crum==0.7.9
+django-extensions==4.1
+django-filter==25.1
+django-modelcluster==6.4
+django-permissionedforms==0.1
+django-phonenumber-field==8.1.0
+django-ses==4.4.0
+django-stubs-ext==5.2.1
+django-taggit==6.1.0
+django-tasks==0.7.0
+django-treebeard==4.7.1
+djangorestframework==3.16.0
+djangorestframework_simplejwt==5.5.0
+draftjs_exporter==5.1.0
+drf-rw-serializers==1.4.0
+drf-spectacular==0.28.0
+ecdsa==0.19.1
+et_xmlfile==2.0.0
+fastapi==0.116.0
+filetype==1.2.0
+greenlet==3.2.3
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.10
+inflection==0.5.1
+iniconfig==2.1.0
+jmespath==1.0.1
+jsonschema==4.24.0
+jsonschema-specifications==2025.4.1
+kombu==5.5.4
+laces==0.1.2
+openpyxl==3.1.5
+packaging==25.0
+passlib==1.7.4
+phonenumbers==9.0.9
+pillow==11.3.0
+pillow_heif==0.21.0
+pluggy==1.6.0
+prompt_toolkit==3.0.51
+psycopg2-binary==2.9.10
+pyasn1==0.6.1
+pycparser==2.22
+pydantic==2.11.7
+pydantic_core==2.33.2
+Pygments==2.19.2
+PyJWT==2.9.0
+pytest==8.4.1
+python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
+python-jose==3.5.0
+python-multipart==0.0.20
+pytz==2025.2
+PyYAML==6.0.2
+referencing==0.36.2
+requests==2.32.4
+rpds-py==0.26.0
+rsa==4.9.1
+s3transfer==0.13.0
+sentry-sdk==2.32.0
+setuptools==80.9.0
+six==1.17.0
+sniffio==1.3.1
+soupsieve==2.7
+SQLAlchemy==2.0.41
+sqlparse==0.5.3
+starlette==0.46.2
+telepath==0.3.1
+types-python-dateutil==2.9.0.20250708
+typing-inspection==0.4.1
+typing_extensions==4.14.1
+tzdata==2025.2
+uritemplate==4.2.0
+urllib3==2.5.0
+uvicorn==0.35.0
+vine==5.1.0
+wagtail==7.0.1
+wcwidth==0.2.13
+websockets==15.0.1
+whitenoise==6.6.0
+Willow==1.10.0
+-------------------------------------------------------------------------------------
+
+### 5 -update Dockerfile :
+ 
+FROM python:3.11-slim-buster
+ 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev \
+        default-libmysqlclient-dev \
+        libjpeg62-turbo-dev \
+        zlib1g-dev \
+        libwebp-dev \
+        curl \
+        vim \
+        net-tools && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+ 
+WORKDIR /app
+ 
+COPY . /app
+ 
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
+ 
+ENV PATH="/app/scripts:${PATH}"
+ 
+EXPOSE 8000
+ 
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "crm.wsgi:application"]
+-------------------------------------------------------------------------------------
+
+### 6- Update docker-compose.yml
+ 
+ 
+services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DBNAME}
+      POSTGRES_USER: ${DBUSER}
+      POSTGRES_PASSWORD: ${DBPASSWORD}
+ 
+  web:
+    build:
+      context: .
+      args:
+        APP_NAME: django-crm
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+ 
+volumes:
+  pgdata:
+-------------------------------------------------------------------------------------
+
+### 7- run op terminal de volgende commands:
+pyhton -m pip install -r requirements.txt
+docker-compose down
+docker-compose build --no-cache
+docker-compose up
+ 
+ 
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+-------------------------------------------------------------------------------------
+
+### 8- op de broweser probeer deze url te gebruiken 
+http://localhost:8000/
+http://localhost:8000/admin/
+http://127.0.0.1:8000/swagger-ui/
+

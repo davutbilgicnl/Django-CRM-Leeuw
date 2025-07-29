@@ -4,6 +4,7 @@ services:
     image: djcrm:1
     container_name: crm-app
     environment:
+      - SECRET_KEY=your-very-secret-key
       - DBNAME=crm
       - DBUSER=crm
       - DBPASSWORD=crm
@@ -16,6 +17,7 @@ services:
       - 8000:8000
     networks:
       - nw
+    command: /home/ubuntu/your_app_name/venv/bin/python manage.py runserver 0.0.0.0:8000
 
   crm-db:
     image: postgres:latest
